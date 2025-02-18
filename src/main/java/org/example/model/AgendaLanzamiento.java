@@ -18,4 +18,69 @@ public class AgendaLanzamiento {
     private List<List<String>> planVuelo;
     private List<Tripulante> tripulacion;
 
+    public AgendaLanzamiento(ObjectId id, Date fecha, Lanzadera lanzaderaId, Nave naveId, Estado estado, List<List<String>> planVuelo, List<Tripulante> tripulacion) {
+        this.id = id;
+        this.fecha = fecha;
+        this.lanzaderaId = lanzaderaId;
+        this.naveId = naveId;
+        this.estado = estado;
+        this.planVuelo = planVuelo;
+        this.tripulacion = tripulacion;
+    }
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public Lanzadera getLanzaderaId() {
+        return lanzaderaId;
+    }
+
+    public void setLanzaderaId(Lanzadera lanzaderaId) {
+        this.lanzaderaId = lanzaderaId;
+    }
+
+    public Nave getNaveId() {
+        return naveId;
+    }
+
+    public void setNaveId(Nave naveId) {
+        this.naveId = naveId;
+    }
+
+    public Estado getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
+
+    public List<List<String>> getPlanVuelo() {
+        return planVuelo;
+    }
+
+    public void setPlanVuelo(List<List<String>> planVuelo) {
+        this.planVuelo = planVuelo;
+    }
+
+    public List<Tripulante> getTripulacion() {
+        return tripulacion;
+    }
+
+    public void setTripulacion(List<Tripulante> tripulacion) {
+        this.tripulacion = tripulacion;
+    }
 }
