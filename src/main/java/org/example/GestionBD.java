@@ -67,6 +67,7 @@ public class GestionBD {
                         planificarLanzamiento(lanzadera);
                     case 2:
                         //Mostrar personal disponible
+
                     case 3:
                         //Mostrar estado de la lanzadera (metodo por terminar)
                         mostrarEstadoLanzadera(lanzadera);
