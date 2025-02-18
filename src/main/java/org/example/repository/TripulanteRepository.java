@@ -24,7 +24,7 @@ public class TripulanteRepository {
     public Map<TipoTripulante,Integer> mostrarTripulantesLanzadera(Lanzadera lanzadera){
         List<Tripulante> listaTri= (List<Tripulante>) tripulanteCollection.find(Filters.eq("lanzadera_id",lanzadera.getId()));
         Map<TipoTripulante,Integer> tripulacion = new HashMap<>();
-        for(Tripulante t : listaTri.getLanzaderaId()){
+        for(Tripulante t : listaTri){
             Tripulante tri=tripulanteCollection.find(Filters.eq("tipo",t.getTipo())).first();
             if(tripulacion.containsKey(tri.getTipo())){
                 int valor=tripulacion.get(tri.getTipo());
