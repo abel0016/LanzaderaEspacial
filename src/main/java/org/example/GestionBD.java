@@ -2,16 +2,20 @@ package org.example;
 
 import org.example.database.MongoDBConnection;
 import org.example.model.Lanzadera;
+import org.example.model.TipoTripulante;
 import org.example.repository.LanzaderaRepository;
+import org.example.repository.TripulanteRepository;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class GestionBD {
     LanzaderaRepository lanzaderaRepository=new LanzaderaRepository();
+    TripulanteRepository tripulanteRepository=new TripulanteRepository();
     Scanner teclado=new Scanner(System.in);
     public GestionBD(){
     }
@@ -55,23 +59,24 @@ public class GestionBD {
                     System.out.println(i+1+" "+ lanzaderas.get(i).getNombre());
                 }
                 int opSeleccionada= teclado.nextInt();
-                Lanzadera lanzadera=lanzaderas.get(opSeleccionada+1);
-                teclado.nextLine();
+                Lanzadera lanzadera=lanzaderas.get(opSeleccionada-1);
                 menuLanzadera();
                 System.out.println("Seleccione una opción:");
                 opcionMenu= teclado.nextInt();
-                teclado.nextLine();
                 switch (opcionMenu){
                     case 1:
                         //Planificar lanzamiento (metodo por terminar)
                         planificarLanzamiento(lanzadera);
+                        break;
                     case 2:
                         //Mostrar personal disponible
+                        mostrarPersonalDisponible(lanzadera);
+                        break;
 
                     case 3:
                         //Mostrar estado de la lanzadera (metodo por terminar)
                         mostrarEstadoLanzadera(lanzadera);
-
+                        break;
                 }
 
             } else if (op==2) {
@@ -106,7 +111,11 @@ public class GestionBD {
         //Entiendo que debo de conseguirlo de AgendaLanzamiento ya que sabemos el id de la lanzadera pero como no hay datos en agendalanzamiento no puedo seguir
 
     }
+    //2.Mostrar personal
     public void mostrarPersonalDisponible(Lanzadera lanzadera){
-
+        Map<TipoTripulante,Integer> personal=tripulanteRepository.mostrarTripulantesLanzadera(lanzadera);
+        for (Map.Entry<TipoTripulante, Integer> tripulante : personal.entrySet()) {
+            System.out.println(tripulante.getKey() + ": " + tripulante.getValue());
+        }
     }
 }

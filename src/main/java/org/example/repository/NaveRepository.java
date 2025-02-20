@@ -10,7 +10,7 @@ public class NaveRepository {
 
     public NaveRepository() {
         MongoDatabase database = MongoDBConnection.getInstance().getDatabase();
-        this.collection = database.getCollection("Naves", Nave.class);
+        this.collection = database.getCollection("naves", Nave.class);
     }
 
 }

@@ -1,5 +1,6 @@
 package org.example.repository;
 
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
@@ -19,21 +20,25 @@ public class TripulanteRepository {
 
     public TripulanteRepository() {
         MongoDatabase database = MongoDBConnection.getInstance().getDatabase();
-        this.tripulanteCollection = database.getCollection("Tripulantes", Tripulante.class);
+        this.tripulanteCollection = database.getCollection("tripulantes", Tripulante.class);
     }
-    public Map<TipoTripulante,Integer> mostrarTripulantesLanzadera(Lanzadera lanzadera){
-        List<Tripulante> listaTri= (List<Tripulante>) tripulanteCollection.find(Filters.eq("lanzadera_id",lanzadera.getId()));
-        Map<TipoTripulante,Integer> tripulacion = new HashMap<>();
-        for(Tripulante t : listaTri){
-            Tripulante tri=tripulanteCollection.find(Filters.eq("tipo",t.getTipo())).first();
-            if(tripulacion.containsKey(tri.getTipo())){
-                int valor=tripulacion.get(tri.getTipo());
-                valor+=1;
-                tripulacion.put(tri.getTipo(),valor);
+    public Map<TipoTripulante, Integer> mostrarTripulantesLanzadera(Lanzadera lanzadera) {
+        FindIterable<Tripulante> iterable = tripulanteCollection.find(Filters.eq("lanzadera_id", lanzadera.getId()));
+        Map<TipoTripulante, Integer> tripulacion = new HashMap<>();
+        for (Tripulante t : iterable) {
+            TipoTripulante tipo = t.getTipo();
+
+            if (tripulacion.containsKey(tipo)) {
+                int valor = tripulacion.get(tipo);
+                valor += 1;
+                tripulacion.put(tipo, valor);
+            } else {
+                tripulacion.put(tipo, 1);
             }
-            tripulacion.put(tri.getTipo(),1);
         }
+
         return tripulacion;
     }
+
 
 }

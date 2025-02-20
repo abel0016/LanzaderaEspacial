@@ -10,7 +10,7 @@ public class AgendaRepository {
 
     public AgendaRepository() {
         MongoDatabase database = MongoDBConnection.getInstance().getDatabase();
-        this.collection = database.getCollection("AgendaLanzamientos", AgendaLanzamiento.class);
+        this.collection = database.getCollection("agendaLanzamientos", AgendaLanzamiento.class);
     }
 
 }

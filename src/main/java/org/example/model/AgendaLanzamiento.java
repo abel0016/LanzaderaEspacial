@@ -27,6 +27,8 @@ public class AgendaLanzamiento {
         this.planVuelo = planVuelo;
         this.tripulacion = tripulacion;
     }
+    public AgendaLanzamiento(){
+    }
 
     public ObjectId getId() {
         return id;
