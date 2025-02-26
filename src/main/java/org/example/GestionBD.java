@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.example.database.MongoDBConnection;
 import org.example.model.*;
 import org.example.repository.*;
+import org.example.utils.LanzamientosUtils;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -94,18 +95,73 @@ public class GestionBD {
 
     }
     //1.Planificar Lanzamiento
-    public void planificarLanzamiento(Lanzadera lanzadera){
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate fechaLanzamiento=null;
-        System.out.println("Ingrese la fecha del lanzamiento (DD-MM-YYYY)");
-        String fechainput=teclado.nextLine();
-        fechaLanzamiento=LocalDate.parse(fechainput,formato);
-        Lanzadera lanzaderaLanzamiento=lanzadera;
-        //Metodo por completar debido a gran confusion, lo dejo para mas adelante
-        //Entiendo que necesito datos en la coleccion de AgendaLanzamiento ya que necesito las naves que no tienen un viaje planificado
-        //Como la coleccion agendalanzamiento aun no existe, no entiendo muy bien como seguir por ahora por lo tanto lo dejo para más adelante
+    public void planificarLanzamiento(Lanzadera lanzadera) {
+        System.out.println("Ingrese la fecha del lanzamiento (DD-MM-YYYY):");
+        String fechainput = teclado.next();
 
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        LocalDate fechaLanzamiento;
+
+        try {
+            fechaLanzamiento = LocalDate.parse(fechainput, formato);
+            if (fechaLanzamiento.isBefore(LocalDate.now())) {
+                System.out.println("No puedes programar un lanzamiento en una fecha pasada.");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("Formato de fecha incorrecto. Inténtalo de nuevo.");
+            return;
+        }
+
+        System.out.println("Selecciona la nave para el lanzamiento:");
+        List<Nave> navesDisponibles = naveRepository.obtenerNavesDisponibles(lanzadera.getId());
+
+        if (navesDisponibles.isEmpty()) {
+            System.out.println("No hay naves disponibles para esta lanzadera.");
+            return;
+        }
+
+        for (int i = 0; i < navesDisponibles.size(); i++) {
+            System.out.println((i + 1) + ". " + navesDisponibles.get(i).getNombre());
+        }
+
+        int seleccion;
+        try {
+            seleccion = teclado.nextInt();
+            teclado.nextLine();
+            if (seleccion < 1 || seleccion > navesDisponibles.size()) {
+                System.out.println("Opción inválida.");
+                return;
+            }
+        } catch (Exception e) {
+            System.out.println("Entrada inválida. Introduce un número.");
+            teclado.nextLine(); // Limpia el buffer
+            return;
+        }
+
+        Nave naveSeleccionada = navesDisponibles.get(seleccion - 1);
+
+        if (agendaRepository.naveTieneLanzamiento(naveSeleccionada.getId())) {
+            System.out.println("Esta nave ya está asignada a un lanzamiento.");
+            return;
+        }
+
+        List<List<String>> planVuelo = LanzamientosUtils.generarPlanVuelo();
+
+        AgendaLanzamiento nuevoLanzamiento = new AgendaLanzamiento(
+                new ObjectId(),
+                java.sql.Date.valueOf(fechaLanzamiento),
+                lanzadera.getId(),
+                naveSeleccionada.getId(),
+                Estado.PLANIFICADO,
+                planVuelo,
+                new ArrayList<>()
+        );
+
+        agendaRepository.planificarLanzamiento(nuevoLanzamiento);
+        System.out.println("Lanzamiento planificado para " + fechaLanzamiento);
     }
+
     //3.Mostrar estado de la lanzadera
     public void mostrarEstadoLanzadera(Lanzadera lanzadera){
         System.out.println("Estado de la lanzadera: "+lanzadera.getNombre());
@@ -292,7 +348,7 @@ public class GestionBD {
 
         // Verificar si la lanzadera tiene suficientes suministros
         if (lanzadera.getOxigenoDisponible() < oxigenoNecesario || lanzadera.getCombustibleDisponible() < combustibleNecesario) {
-            System.out.println("❌ No hay suficientes suministros en la lanzadera.");
+            System.out.println("No hay suficientes suministros en la lanzadera.");
             System.out.println("Oxígeno disponible: " + lanzadera.getOxigenoDisponible() + " / Requerido: " + oxigenoNecesario);
             System.out.println("Combustible disponible: " + lanzadera.getCombustibleDisponible() + " / Requerido: " + combustibleNecesario);
             return;
@@ -309,47 +365,9 @@ public class GestionBD {
         naveRepository.actualizarOxigenoYCombustible(nave.getId(), nave.getOxigeno(), nave.getCombustible());
 
         // Mostrar resultado final
-        System.out.println("✅ Suministros cargados con éxito.");
+        System.out.println("Suministros cargados con éxito.");
         System.out.println("Oxígeno cargado: " + oxigenoNecesario);
         System.out.println("Combustible cargado: " + combustibleNecesario);
-    }
-    public void planificarLanzamiento(Lanzadera lanzadera) {
-        System.out.println("Ingrese la fecha del lanzamiento (DD-MM-YYYY):");
-        String fechainput = teclado.next();
-
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate fechaLanzamiento = LocalDate.parse(fechainput, formato);
-
-        System.out.println("Selecciona la nave para el lanzamiento:");
-        List<Nave> navesDisponibles = naveRepository.obtenerNavesDisponibles(lanzadera.getId());
-
-        if (navesDisponibles.isEmpty()) {
-            System.out.println("No hay naves disponibles para esta lanzadera.");
-            return;
-        }
-
-        for (int i = 0; i < navesDisponibles.size(); i++) {
-            System.out.println((i + 1) + ". " + navesDisponibles.get(i).getNombre());
-        }
-
-        int seleccion = teclado.nextInt();
-        teclado.nextLine();
-        Nave naveSeleccionada = navesDisponibles.get(seleccion - 1);
-
-        List<List<String>> planVuelo = LanzamientosUtils.generarPlanVuelo();
-
-        AgendaLanzamiento nuevoLanzamiento = new AgendaLanzamiento(
-                new ObjectId(),
-                java.sql.Date.valueOf(fechaLanzamiento),
-                lanzadera.getId(),
-                naveSeleccionada.getId(),
-                Estado.PLANIFICADO,
-                planVuelo,
-                new ArrayList<>()
-        );
-
-        agendaRepository.planificarLanzamiento(nuevoLanzamiento);
-        System.out.println("✅ Lanzamiento planificado para " + fechaLanzamiento);
     }
     public void cancelarLanzamiento(Lanzadera lanzadera) {
         AgendaLanzamiento proximoLanzamiento = agendaRepository.obtenerProximoLanzamiento(lanzadera.getId());
@@ -360,7 +378,7 @@ public class GestionBD {
         }
 
         agendaRepository.actualizarEstadoLanzamiento(proximoLanzamiento.getId(), Estado.CANCELADO);
-        System.out.println("🚨 Lanzamiento cancelado con éxito.");
+        System.out.println("Lanzamiento cancelado con éxito.");
     }
     public void posponerLanzamiento(Lanzadera lanzadera) {
         AgendaLanzamiento proximoLanzamiento = agendaRepository.obtenerProximoLanzamiento(lanzadera.getId());
@@ -377,25 +395,9 @@ public class GestionBD {
         LocalDate nuevaFecha = LocalDate.parse(fechainput, formato);
 
         agendaRepository.actualizarFechaLanzamiento(proximoLanzamiento.getId(), java.sql.Date.valueOf(nuevaFecha));
-        System.out.println("📅 Lanzamiento pospuesto para " + nuevaFecha);
+        System.out.println("Lanzamiento pospuesto para " + nuevaFecha);
     }
 
-    public void realizarLanzamiento(Lanzadera lanzadera) {
-        AgendaLanzamiento proximoLanzamiento = agendaRepository.obtenerProximoLanzamiento(lanzadera.getId());
-
-        if (proximoLanzamiento == null) {
-            System.out.println("No hay lanzamientos planificados para realizar.");
-            return;
-        }
-
-        if (proximoLanzamiento.getTripulacion().isEmpty()) {
-            System.out.println("No se puede realizar el lanzamiento. No hay tripulación embarcada.");
-            return;
-        }
-
-        agendaRepository.actualizarEstadoLanzamiento(proximoLanzamiento.getId(), Estado.LANZADO);
-        System.out.println("🚀 Lanzamiento realizado con éxito.");
-    }
 
 
 }

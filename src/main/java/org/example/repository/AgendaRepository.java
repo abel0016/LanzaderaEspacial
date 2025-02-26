@@ -7,11 +7,13 @@ import com.mongodb.client.model.Updates;
 import org.bson.types.ObjectId;
 import org.example.database.MongoDBConnection;
 import org.example.model.AgendaLanzamiento;
+import org.example.model.Estado;
 import org.example.model.Tripulante;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class AgendaRepository {
@@ -24,8 +26,6 @@ public class AgendaRepository {
 
     public List<AgendaLanzamiento> obtenerLanzamientosPlanificados(ObjectId lanzaderaId) {
         List<AgendaLanzamiento> lanzamientos = new ArrayList<>();
-
-        // Obtener todos los lanzamientos de la lanzadera
         for (AgendaLanzamiento lanzamiento : collection.find(Filters.eq("lanzadera_id", lanzaderaId))) {
             if ("PLANIFICADO".equals(lanzamiento.getEstado())) {
                 lanzamientos.add(lanzamiento);
@@ -89,6 +89,15 @@ public class AgendaRepository {
         collection.updateOne(Filters.eq("_id", lanzamientoId),
                 Updates.set("fecha", nuevaFecha));
     }
+    public boolean naveTieneLanzamiento(ObjectId idNave) {
+        return collection.find(Filters.eq("naveId", idNave)).first() != null;
+    }
+    public void planificarLanzamiento(AgendaLanzamiento lanzamiento) {
+        collection.insertOne(lanzamiento);
+    }
+
+
+
 
 
 }

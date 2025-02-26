@@ -4,9 +4,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Updates;
 import org.bson.types.ObjectId;
 import org.example.database.MongoDBConnection;
-import org.example.model.AgendaLanzamiento;
 import org.example.model.Lanzadera;
 import org.example.model.TipoTripulante;
 import org.example.model.Tripulante;
@@ -23,6 +23,7 @@ public class TripulanteRepository {
         MongoDatabase database = MongoDBConnection.getInstance().getDatabase();
         this.tripulanteCollection = database.getCollection("tripulantes", Tripulante.class);
     }
+
     public Map<TipoTripulante, Integer> mostrarTripulantesLanzadera(Lanzadera lanzadera) {
         FindIterable<Tripulante> iterable = tripulanteCollection.find(Filters.eq("lanzadera_id", lanzadera.getId()));
         Map<TipoTripulante, Integer> tripulacion = new HashMap<>();
@@ -37,9 +38,9 @@ public class TripulanteRepository {
                 tripulacion.put(tipo, 1);
             }
         }
-
         return tripulacion;
     }
+
     public List<Tripulante> obtenerTodosLosTripulantes() {
         List<Tripulante> tripulantes = new ArrayList<>();
         for (Tripulante t : tripulanteCollection.find()) {
@@ -48,6 +49,7 @@ public class TripulanteRepository {
         return tripulantes;
     }
 
-
-
+    public void liberarTripulante(ObjectId tripulanteId) {
+        tripulanteCollection.updateOne(Filters.eq("_id", tripulanteId), Updates.unset("estado"));
+    }
 }
