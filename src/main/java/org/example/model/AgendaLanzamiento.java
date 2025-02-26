@@ -10,15 +10,15 @@ public class AgendaLanzamiento {
     private ObjectId id;
     private Date fecha;
     @BsonProperty(value = "lanzadera_id")
-    private Lanzadera lanzaderaId;
+    private ObjectId lanzaderaId;
     @BsonProperty(value = "nave_id")
-    private Nave naveId;
+    private ObjectId naveId;
     private Estado estado;
     @BsonProperty(value = "plan_vuelo")
     private List<List<String>> planVuelo;
     private List<Tripulante> tripulacion;
 
-    public AgendaLanzamiento(ObjectId id, Date fecha, Lanzadera lanzaderaId, Nave naveId, Estado estado, List<List<String>> planVuelo, List<Tripulante> tripulacion) {
+    public AgendaLanzamiento(ObjectId id, Date fecha, ObjectId lanzaderaId, ObjectId naveId, Estado estado, List<List<String>> planVuelo, List<Tripulante> tripulacion) {
         this.id = id;
         this.fecha = fecha;
         this.lanzaderaId = lanzaderaId;
@@ -46,19 +46,19 @@ public class AgendaLanzamiento {
         this.fecha = fecha;
     }
 
-    public Lanzadera getLanzaderaId() {
+    public ObjectId getLanzaderaId() {
         return lanzaderaId;
     }
 
-    public void setLanzaderaId(Lanzadera lanzaderaId) {
+    public void setLanzaderaId(ObjectId lanzaderaId) {
         this.lanzaderaId = lanzaderaId;
     }
 
-    public Nave getNaveId() {
+    public ObjectId getNaveId() {
         return naveId;
     }
 
-    public void setNaveId(Nave naveId) {
+    public void setNaveId(ObjectId naveId) {
         this.naveId = naveId;
     }
 

@@ -6,6 +6,7 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import org.bson.types.ObjectId;
 import org.example.database.MongoDBConnection;
+import org.example.model.AgendaLanzamiento;
 import org.example.model.Lanzadera;
 import org.example.model.TipoTripulante;
 import org.example.model.Tripulante;
@@ -39,6 +40,14 @@ public class TripulanteRepository {
 
         return tripulacion;
     }
+    public List<Tripulante> obtenerTodosLosTripulantes() {
+        List<Tripulante> tripulantes = new ArrayList<>();
+        for (Tripulante t : tripulanteCollection.find()) {
+            tripulantes.add(t);
+        }
+        return tripulantes;
+    }
+
 
 
 }
